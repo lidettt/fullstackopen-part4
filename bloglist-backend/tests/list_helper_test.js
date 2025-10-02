@@ -112,3 +112,13 @@ describe("most blogs", () => {
     assert.deepStrictEqual(result, expectedAuthor);
   });
 });
+describe("most likes", () => {
+  test("this author has the most likes", () => {
+    const expectedAuthor = {
+      author: "Edsger W. Dijkstra",
+      likes: 17,
+    };
+    const result = listHelper.mostLikes(blogs);
+    assert.deepStrictEqual(result, expectedAuthor);
+  });
+});
