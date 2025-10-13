@@ -45,7 +45,24 @@ test("verify the HTTP POST request successfully create a new blog post", async (
 
   assert.strictEqual(blogsAfterPost.length, initialBlogs.length + 1);
 });
-
+test("verify if the likes property is missing from the request", async () => {
+  // const blogBeforePost = await helper.blogInDb();
+  const blogWithoutLike = {
+    author: "Testor",
+    title: "Test the Blog without Like",
+    url: "https://fullstackopen.com/en/",
+  };
+  await api
+    .post("/api/blogs")
+    .send(blogWithoutLike)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+  const blogAfterPost = await helper.blogInDb();
+  const justAddedBlog = blogAfterPost.find(
+    (blog) => blog.title === "Test the Blog without Like"
+  );
+  assert.strictEqual(justAddedBlog.likes, 0);
+});
 after(async () => {
   await mongoose.connection.close();
 });
