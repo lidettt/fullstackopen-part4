@@ -28,6 +28,23 @@ test("verify the unique indentifier of the blog posts to named id", async () => 
   assert.ok(blog.id);
   assert.strictEqual(blog._id, undefined);
 });
+test("verify the HTTP POST request successfully create a new blog post", async () => {
+  const initialBlogs = await helper.blogInDb();
+  const newBlog = {
+    likes: 999,
+    author: "Test",
+    title: "Tesing the HTTP POST request",
+    url: "https://fullstackopen.com/en/",
+  };
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+  const blogsAfterPost = await helper.blogInDb();
+
+  assert.strictEqual(blogsAfterPost.length, initialBlogs.length + 1);
+});
 
 after(async () => {
   await mongoose.connection.close();
