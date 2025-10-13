@@ -57,11 +57,25 @@ test("verify if the likes property is missing from the request", async () => {
     .send(blogWithoutLike)
     .expect(201)
     .expect("Content-Type", /application\/json/);
-  const blogAfterPost = await helper.blogInDb();
-  const justAddedBlog = blogAfterPost.find(
+  const blogsAfterPost = await helper.blogInDb();
+  const justAddedBlog = blogsAfterPost.find(
     (blog) => blog.title === "Test the Blog without Like"
   );
   assert.strictEqual(justAddedBlog.likes, 0);
+});
+test("verify if the title or url property is missing from the request", async () => {
+  const blogWithoutTitle = {
+    likes: 100,
+    author: "Without Title",
+    url: "https://fullstackopen.com/en/",
+  };
+  const blogWithoutUrl = {
+    likes: 200,
+    author: "Without URL",
+    title: "Test the Blog without URL",
+  };
+  await api.post("/api/blogs").send(blogWithoutTitle).expect(400);
+  await api.post("/api/blogs").send(blogWithoutUrl).expect(400);
 });
 after(async () => {
   await mongoose.connection.close();
