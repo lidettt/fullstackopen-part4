@@ -77,6 +77,20 @@ test("verify if the title or url property is missing from the request", async ()
   await api.post("/api/blogs").send(blogWithoutTitle).expect(400);
   await api.post("/api/blogs").send(blogWithoutUrl).expect(400);
 });
+test("verify if the HTTP DELETE request successfully delete a blog post", async () => {
+  const blogsAtStart = await helper.blogInDb();
+  const blogToDelete = blogsAtStart[0];
+
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+  const blogsAtEnd = await helper.blogInDb();
+
+  const titles = blogsAtEnd.map((blog) => blog.title);
+  assert(!titles.includes(blogToDelete.content));
+
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1);
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
