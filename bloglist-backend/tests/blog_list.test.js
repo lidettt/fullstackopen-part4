@@ -90,6 +90,21 @@ test("verify if the HTTP DELETE request successfully delete a blog post", async 
 
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1);
 });
+test("verify if the HTTP PUT request successfully update a blog post", async () => {
+  const blogsBeforePut = await helper.blogInDb();
+  const blogToUpdate = blogsBeforePut[0];
+  const updateObject = {
+    likes: 1000,
+  };
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updateObject)
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+  const blogAfterPut = await helper.blogInDb();
+  const updatedBlog = blogAfterPut.find((blog) => blog.id === blogToUpdate.id);
+  assert.strictEqual(updatedBlog.likes, updateObject.likes);
+});
 
 after(async () => {
   await mongoose.connection.close();
