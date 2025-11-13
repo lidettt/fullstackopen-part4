@@ -30,14 +30,20 @@ test("verify the unique indentifier of the blog posts to named id", async () => 
 });
 test("verify the HTTP POST request successfully create a new blog post", async () => {
   const initialBlogs = await helper.blogInDb();
+
   const newBlog = {
     likes: 999,
     author: "Test",
     title: "Tesing the HTTP POST request",
     url: "https://fullstackopen.com/en/",
   };
+  const login = await api
+    .post("/api/login")
+    .send({ username: "lidet", password: "lidet123" });
+  const token = login.body.token;
   await api
     .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect("Content-Type", /application\/json/);
